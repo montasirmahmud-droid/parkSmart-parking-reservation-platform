@@ -11,7 +11,7 @@ ParkSmart is an integrated solution designed to streamline parking management. I
 ## 👥 Team Members
 * **Member Name 1: Tasmia hossain** (ID: 22201742) 
 * **Member Name 2: Montasir Mahmud** (ID: 23301119)
-* **Member Name 3:Kamrul Islam Kamran** (ID: 24341149)
+* **Member Name 3: Kamrul Islam Kamran** (ID: 24341149)
 
 ## 💻 Tech Stack
 * **Frontend:** React.js (helps with dynamic dashboards)
