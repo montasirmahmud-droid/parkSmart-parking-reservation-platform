@@ -1,4 +1,4 @@
-# parkSmart-parking reservation platform
+# parkSmart- A Parking Reservation and  Monitoring Platform
 A real-time parking reservation and monitoring system for efficeint slot management.
 
 
