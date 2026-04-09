@@ -15,6 +15,9 @@ mongoose.connect('mongodb://localhost:27017/parksmart')
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes); // This makes signup live at /api/auth/signup
 
+const financeRoutes = require('./routes/financeRoutes');
+app.use('/api/finance', financeRoutes); //Finance routes (Log/Rates)
+
 // 5. Start the engine
 const PORT = 5000;
 app.listen(PORT, () => {
