@@ -7,8 +7,8 @@ app.use(express.json()); // 3. Logic: This lets the server read JSON data from t
 // --- NEW: DATABASE CONNECTION ---
 // This tells the server WHERE to save the data (Member 3 Finance logic needs this!)
 mongoose.connect('mongodb://localhost:27017/parksmart')
-    .then(() => console.log("✅ Database Connected! ParkSmart is ready to save users."))
-    .catch(err => console.log("❌ Database Error: ", err));
+    .then(() => console.log("Database Connected! ParkSmart is ready to save users."))
+    .catch(err => console.log("Database Error: ", err));
 // --------------------------------
 
 // 4. Link your Member 3 Routes
