@@ -23,7 +23,7 @@ const financeSchema = new mongoose.Schema({
     // Feature 17: Stores the current hourly rate for this specific parking session
     hourlyRate: { 
         type: Number, 
-        default: 10 // Standard rate: $10/hour
+        default: 10 // Standard rate: BDT100/hour
     },
     // Feature 15: Status log (e.g., "Parked", "Completed", "Overstay")
     status: { 
