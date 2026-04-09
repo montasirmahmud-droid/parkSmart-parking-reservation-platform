@@ -18,5 +18,5 @@ app.use('/api/auth', authRoutes); // This makes your signup live at /api/auth/si
 // 5. Start the engine
 const PORT = 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}. ParkSmart is alive!`);
+    console.log(`Server is running on port ${PORT}. ParkSmart is alive!`);
 });
