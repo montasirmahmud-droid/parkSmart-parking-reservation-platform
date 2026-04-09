@@ -6,10 +6,14 @@ const authController = require('../controllers/authController');
 // This tells the server: "When someone sends info to /signup, use the signup logic"
 router.post('/signup', authController.signup);
 
-module.exports = router;
 
 //login (checks passwords)
 //This tells the server that /login and /logout are now active addresses.
 
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
+
+//makes accessible
+module.exports = router;
+
+
