@@ -7,3 +7,9 @@ const authController = require('../controllers/authController');
 router.post('/signup', authController.signup);
 
 module.exports = router;
+
+//login (checks passwords)
+//This tells the server that /login and /logout are now active addresses.
+
+router.post('/login', authController.login);
+router.post('/logout', authController.logout);
