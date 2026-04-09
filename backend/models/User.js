@@ -1,7 +1,7 @@
 const mongoose = require('mongoose'); // Import Mongoose (the bridge between Node and our Database)
 
 /**
- * MEMBER 3 LOGIC: THE USER MODEL
+ *LOGIC: THE USER MODEL
  * This is the "M" in MVC. It acts as a blueprint for every user in our system.
  */
 const userSchema = new mongoose.Schema({
