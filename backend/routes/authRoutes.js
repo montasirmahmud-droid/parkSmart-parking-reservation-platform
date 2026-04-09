@@ -1,0 +1,9 @@
+const express = require('express');
+const router = express.Router();
+// This connects the Route to the Controller file you just showed me
+const authController = require('../controllers/authController');
+
+// This tells the server: "When someone sends info to /signup, use the signup logic"
+router.post('/signup', authController.signup);
+
+module.exports = router;
