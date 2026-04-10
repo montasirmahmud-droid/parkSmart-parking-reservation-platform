@@ -1,5 +1,5 @@
 # ParkSmart - A Parking Reservation and  Monitoring Platform
-A real-time parking reservation and monitoring system for efficeint slot management.
+A real-time parking reservation and monitoring system for efficient slot management.
 
 
 ## Project Overview
