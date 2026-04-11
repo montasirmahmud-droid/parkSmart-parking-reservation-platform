@@ -9,9 +9,16 @@ app.use(cors());                    // Now it's okay to use cors
 app.use(express.json());            // Lets the server read JSON data
 
 // --- DATABASE CONNECTION ---
-mongoose.connect('mongodb://localhost:27017/parksmart')
+
+//const dbURI = 'mongodb://localhost:27017/parksmart'
+
+// from this part is for temp database
+const dbURI = "mongodb://SysAdmin_1:SysAdmin12345@ac-v0rralt-shard-00-00.zyigojp.mongodb.net:27017,ac-v0rralt-shard-00-01.zyigojp.mongodb.net:27017,ac-v0rralt-shard-00-02.zyigojp.mongodb.net:27017/?ssl=true&replicaSet=atlas-xlu1r0-shard-0&authSource=admin&appName=ParkSmartCluster"
+
+
+mongoose.connect(dbURI)
     .then(() => console.log("Database Connected! ParkSmart is ready."))
-    .catch(err => console.log("Database Error: ", err));
+    .catch((err) => console.log("Database Error: ", err));
 
 // --- ROUTES ---
 const authRoutes = require('./routes/authRoutes');
@@ -27,3 +34,6 @@ app.listen(PORT, () => {
 });
 
 
+//temp database didn't connect with these:
+//mongodb+srv://SysAdmin_1:<db_password>@parksmartcluster.zyigojp.mongodb.net/?appName=ParkSmartCluster
+//const dbURI = 'mongodb+srv://SysAdmin_1:SysAdmin12345@parksmartcluster.zyigojp.mongodb.net/?appName=ParkSmartCluster'
