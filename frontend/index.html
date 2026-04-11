@@ -1,1 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ParkSmart - Signup</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h2>Welcome to ParkSmart 🚗</h2>
+    
+    <!-- This is the "Signup" box -->
+    <div id="signup-form">
+        <h3>Create an Account</h3>
+        <input type="text" id="username" placeholder="Username">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="signup-btn">Sign Up</button>
+    </div>
 
+    <hr> <!-- Visual line to separate them -->
+
+    <div id="login-form">
+        <h3>Login to ParkSmart</h3>
+        <input type="email" id="login-email" placeholder="Email">
+        <input type="password" id="login-password" placeholder="Password">
+        <button id="login-btn">Login</button>
+    </div>
+
+    <hr>
+    
+    <div id="finance-section">
+        <h3>Admin: Log Parking Entry (Feature 15)</h3>
+        <!-- In a real app, we'd select a user, but for now, we'll paste a User ID -->
+        <input type="text" id="userId" placeholder="Paste User ID from MongoDB">
+        <input type="number" id="hourlyRate" placeholder="Rate (e.g. 100)" value="100">
+        <button id="log-entry-btn">Record Entry</button>
+    </div>
+
+<p id="finance-message"></p>
+
+
+
+    <!-- This is where we will see the message from the server -->
+    <p id="response-message"></p>
+
+    <!-- Link your logic file -->
+    <script src="app.js"></script>
+</body>
+</html>
