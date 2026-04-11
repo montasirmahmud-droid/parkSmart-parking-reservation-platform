@@ -1,1 +1,17 @@
+/* Give the button some style */
+button {
+    padding: 8px 15px;
+    cursor: pointer; /* This turns the mouse into a hand icon */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: 0.3s; /* Makes the color change smooth */
+}
+
+/* This is the "Hovering" logic you asked for */
+button:hover {
+    background-color: #0056b3; /* Darker blue when you hover */
+    transform: scale(1.05);    /* Makes it pop out slightly */
+}
 
