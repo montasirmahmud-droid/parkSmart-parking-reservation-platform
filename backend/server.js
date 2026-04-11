@@ -1,25 +1,29 @@
-const express = require('express'); // 1. Load the web server tool
-const mongoose = require('mongoose'); // NEW: Load the Database tool
-const app = express();              // 2. Start the "App" (the server)
+const express = require('express'); // 1. Load the tool
+const mongoose = require('mongoose'); 
+const cors = require('cors');        // Load the security pass
 
-app.use(express.json()); // 3. Logic: This lets the server read JSON data from the user
+const app = express();              // 2. NOW start the "App" (the car is built)
 
-// --- NEW: DATABASE CONNECTION ---
-// This tells the server WHERE to save the data (Finance logic needs this!)
+// --- MIDDLEWARE (The settings) ---
+app.use(cors());                    // Now it's okay to use cors
+app.use(express.json());            // Lets the server read JSON data
+
+// --- DATABASE CONNECTION ---
 mongoose.connect('mongodb://localhost:27017/parksmart')
-    .then(() => console.log("Database Connected! ParkSmart is ready to save users."))
+    .then(() => console.log("Database Connected! ParkSmart is ready."))
     .catch(err => console.log("Database Error: ", err));
-// --------------------------------
 
-// 4. Link the Routes
+// --- ROUTES ---
 const authRoutes = require('./routes/authRoutes');
-app.use('/api/auth', authRoutes); // This makes signup live at /api/auth/signup
+app.use('/api/auth', authRoutes); 
 
 const financeRoutes = require('./routes/financeRoutes');
-app.use('/api/finance', financeRoutes); //Finance routes (Log/Rates)
+app.use('/api/finance', financeRoutes);
 
-// 5. Start the engine
+// --- START ENGINE ---
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}. ParkSmart is alive!`);
 });
+
+
