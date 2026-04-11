@@ -7,12 +7,19 @@ exports.signup = async (req, res) => {
         // 1. Get the data from the user (from the website)
         const { username, email, password } = req.body;
 
-        // 2. Security Check: Scramble the password so it's safe
+        // 2. Security Check: Check if user exists BEFORE hashing
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "That email is already registered!" });
+        }
+
+        // 3. Security Check: Scramble the password so it's safe
         // We "hash" it so even we can't see the real password!
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // 3. Create a new User using our Model
+
+        // 4. Create a new User using our Model
         const newUser = new User({
             username: username,
             email: email,
