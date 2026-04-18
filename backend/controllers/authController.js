@@ -48,8 +48,13 @@ exports.login = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Wrong password!" });
-
-        res.status(200).json({ message: "Login successful!" });
+        
+        // We send back the role so the frontend knows what to show/hide
+        res.status(200).json({ 
+            message: "Login successful!", 
+            role: user.role, 
+            username: user.username 
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

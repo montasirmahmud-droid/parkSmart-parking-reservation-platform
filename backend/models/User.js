@@ -1,7 +1,7 @@
 const mongoose = require('mongoose'); // Import Mongoose (the bridge between Node and our Database)
 
 /**
- *LOGIC: THE USER MODEL
+ * THE USER MODEL
  * This is the "M" in MVC. It acts as a blueprint for every user in our system.
  */
 const userSchema = new mongoose.Schema({
@@ -26,6 +26,13 @@ const userSchema = new mongoose.Schema({
         required: true 
     },
     
+    //Define user access levels: default is 'Customer', but can be upgraded to Admin/Manager roles
+    role: { 
+        type: String, 
+        enum: ['Customer', 'FinanceAdmin', 'ParkingManager', 'SystemAdmin'], 
+        default: 'Customer' 
+    },
+
     // Member 3 specific: Automatically record when the account was made.
     // 'Date.now' puts the current time in the database automatically.
     accountCreated: { 
