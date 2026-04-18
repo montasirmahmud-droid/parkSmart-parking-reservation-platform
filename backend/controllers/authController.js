@@ -1,62 +1,46 @@
-const User = require('../models/User'); // Import our "Library Card" (Model)
-const bcrypt = require('bcryptjs');     // Import the "Scrambler" tool
+const mongoose = require('mongoose'); // Import Mongoose (the bridge between Node and our Database)
 
-// This function handles the "Sign Up" logic
-exports.signup = async (req, res) => {
-    try {
-        // 1. Get the data from the user (from the website)
-        const { username, email, password } = req.body;
+/**
+ * THE USER MODEL
+ * This is the "M" in MVC. It acts as a blueprint for every user in our system.
+ */
+const userSchema = new mongoose.Schema({
+    // Rule for Username: It must be text and it cannot be empty.
+    username: { 
+        type: String, 
+        required: true 
+    },
+    
+    // Rule for Email: Mandatory, must be text, and UNIQUE.
+    // 'unique: true' prevents two people from signing up with the same email.
+    email: { 
+        type: String, 
+        required: true, 
+        unique: true 
+    },
+    
+    // Rule for Password: We store the "Hashed" (scrambled) version here.
+    // It is marked as required because an account must be secure.
+    password: { 
+        type: String, 
+        required: true 
+    },
+    
+    //Define user access levels: default is 'Customer', but can be upgraded to Admin/Manager roles
+    role: { 
+        type: String, 
+        enum: ['Customer', 'FinanceAdmin', 'ParkingManager', 'SystemAdmin'], 
+        default: 'Customer' 
+    },
 
-        // 2. Security Check: Check if user exists BEFORE hashing
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: "That email is already registered!" });
-        }
-
-        // 3. Security Check: Scramble the password so it's safe
-        // We "hash" it so even we can't see the real password!
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-
-        // 4. Create a new User using our Model
-        const newUser = new User({
-            username: username,
-            email: email,
-            password: hashedPassword // Save the scrambled one, not the real one!
-        });
-
-        // 4. Save the user into the MongoDB database
-        await newUser.save();
-
-        // 5. Tell the user "Success!"
-        res.status(201).json({ message: "User created successfully! Welcome to ParkSmart." });
-
-    } catch (error) {
-        // If something goes wrong (like a duplicate email), tell the user why
-        res.status(500).json({ error: error.message });
+    // Member 3 specific: Automatically record when the account was made.
+    // 'Date.now' puts the current time in the database automatically.
+    accountCreated: { 
+        type: Date, 
+        default: Date.now 
     }
-};
+});
 
-
-// LOGIN LOGIC
-exports.login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: "User not found!" });
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: "Wrong password!" });
-
-        res.status(200).json({ message: "Login successful!" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-
-// LOGOUT LOGIC
-exports.logout = async (req, res) => {
-    res.status(200).json({ message: "Logged out successfully." });
-};
+// We turn this blueprint into a "Model" named 'User' and export it.
+// This allows our Controller to say "User.create()" or "User.find()".
+module.exports = mongoose.model('User', userSchema);
