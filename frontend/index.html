@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ParkSmart - Signup</title>
+    <title>ParkSmart - Member 3 Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- 1. THE "BYE-BYE" BUTTON  -->
+    <!-- This button is at the top corner so you can leave the app safely! -->
+    <div style="text-align: right; padding: 10px;">
+        <button id="logout-btn" style="background-color: #f44336; color: white;">Logout</button>
+    </div>
+
     <h2>Welcome to ParkSmart 🚗</h2>
     
-    <!-- This is the "Signup" box -->
+    <!-- 2. THE "HELLO! I'M NEW" SECTION (SIGNUP)  -->
+    <!-- This is where brand new people tell us their names and passwords. -->
     <div id="signup-form">
         <h3>Create an Account</h3>
         <input type="text" id="username" placeholder="Username">
@@ -17,8 +25,10 @@
         <button id="signup-btn">Sign Up</button>
     </div>
 
-    <hr> <!-- Visual line to separate them -->
+    <hr> <!-- This is just a gray line to keep things tidy! -->
 
+    <!-- 3. THE "I'M BACK!" SECTION (LOGIN)  -->
+    <!-- If you already have an account, you type your secret keys here. -->
     <div id="login-form">
         <h3>Login to ParkSmart</h3>
         <input type="email" id="login-email" placeholder="Email">
@@ -26,24 +36,54 @@
         <button id="login-btn">Login</button>
     </div>
 
-    <hr>
+    <!-- This little paragraph below shows messages like "Success!" or "Wrong Password!" -->
+    <p id="response-message"></p>
+
+    <hr> 
     
+    <!-- 4. THE "ADMIN'S CLIPBOARD" (LOGGING ENTRY)  -->
+    <!-- Feature 15: When a car arrives at the gate, the Admin uses this to start the timer! -->
     <div id="finance-section">
         <h3>Admin: Log Parking Entry (Feature 15)</h3>
-        <!-- In a real app, we'd select a user, but for now, we'll paste a User ID -->
-        <input type="text" id="userId" placeholder="Paste User ID from MongoDB">
-        <input type="number" id="hourlyRate" placeholder="Rate (e.g. 100)" value="100">
+        <p style="font-size: 0.8em; color: gray;">(Copy a User ID from your Database and paste it here!)</p>
+        <input type="text" id="userId" placeholder="Paste User ID here">
+        <input type="number" id="hourlyRate" placeholder="Price per hour" value="100">
         <button id="log-entry-btn">Record Entry</button>
     </div>
 
-<p id="finance-message"></p>
+    <!-- This shows a message when the car is successfully recorded. -->
+    <p id="finance-message"></p>
 
+    <hr>
 
+    <!-- 5. THE "MONEY BOX" (REVENUE REPORT)  -->
+    <!-- Feature 15: This green box adds up all the money we've earned today! -->
+    <div id="revenue-report" style="background-color: #e8f5e9; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #c8e6c9;">
+       <strong>Total Revenue Collected: BDT <span id="total-revenue">0</span></strong>
+    </div>
 
-    <!-- This is where we will see the message from the server -->
-    <p id="response-message"></p>
+    <!-- 6. THE "LIVE VIEW" TABLE  -->
+    <!-- Feature 15 & 17: This list shows us EVERYONE who is parked right now. -->
+    <div id="activity-log-section">
+        <h3>Live Parking Activity (Feature 15)</h3>
+        <table border="1" id="activity-table" style="width: 100%; text-align: left;">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Entry Time</th>
+                    <th>Status</th>
+                    <th>Action</th> <!-- This is where the "Check Out" button will pop up! -->
+                </tr>
+            </thead>
+            <tbody id="activity-body">
+                <!-- Our JavaScript will magically put rows of data here! -->
+            </tbody>
+        </table>
+    </div>
 
-    <!-- Link your logic file -->
+    <!-- 7. THE BRAIN -->
+    <!-- This links to your app.js file which has all the logic. -->
     <script src="app.js"></script>
+
 </body>
 </html>
