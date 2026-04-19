@@ -1,3 +1,7 @@
+// --- IMPORT NEW ROUTES (Parking Features) ---
+const parkingSlotRoutes = require('./routes/parkingSlotRoutes');
+const reservationRoutes = require('./routes/reservationRoutes');
+const recommendationRoutes = require('./routes/recommendationRoutes');
 const express = require('express'); // 1. Load the tool
 const mongoose = require('mongoose'); 
 const cors = require('cors');        // Load the security pass
@@ -26,6 +30,17 @@ app.use('/api/auth', authRoutes);
 
 const financeRoutes = require('./routes/financeRoutes');
 app.use('/api/finance', financeRoutes);
+// --- PARKING SLOT ROUTES (Feature 18) ---
+//  allows users to view slot details
+app.use('/api/slots', parkingSlotRoutes);
+
+// --- RESERVATION ROUTES (Feature 19) ---
+// allows extending reservation time
+app.use('/api/reservations', reservationRoutes);
+
+// --- RECOMMENDATION ROUTES (Feature 20) ---
+//  shows frequently used slots
+app.use('/api/recommendations', recommendationRoutes);
 
 // --- START ENGINE ---
 const PORT = 5000;
