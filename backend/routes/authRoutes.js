@@ -16,7 +16,3 @@ router.post('/logout', authController.logout);
 //makes accessible
 module.exports = router;
 
-
-
-
-
