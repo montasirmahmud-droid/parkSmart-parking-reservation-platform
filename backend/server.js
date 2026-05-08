@@ -61,8 +61,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
-
-
-//temp database didn't connect with these:
-//mongodb+srv://SysAdmin_1:<db_password>@parksmartcluster.zyigojp.mongodb.net/?appName=ParkSmartCluster
-//const dbURI = 'mongodb+srv://SysAdmin_1:SysAdmin12345@parksmartcluster.zyigojp.mongodb.net/?appName=ParkSmartCluster'
