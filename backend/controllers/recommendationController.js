@@ -1,8 +1,11 @@
-import Reservation from "../models/Reservation.js";
+const Reservation = require("../models/Reservation");
+//import Reservation from "../models/Reservation.js";
 
-export const getRecommendedSlots = async (req, res) => {
+//export const getRecommendedSlots = async (req, res) => {
+exports.getRecommendedSlots = async (req, res) => {
   try {
-    const userId = req.user?.id;
+    //const userId = req.user?.id;
+    const userId = req.user?._id;
 
     const data = await Reservation.aggregate([
       { $match: { user: userId } },
