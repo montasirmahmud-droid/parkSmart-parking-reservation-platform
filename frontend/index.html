@@ -1,103 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>ParkSmart - Member 3 Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <head>        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+
+        <title>ParkSmart- A Parking Reservation and  Monitoring Platform</title>
+        
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="background.css">
+
+        <!-- This is the way to load the modern font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    </head>
+
+
 <body>
 
-    <!-- 1. THE "BYE-BYE" BUTTON  -->
-    <!-- This button is at the top corner so you can leave the app safely! -->
-    <div style="text-align: right; padding: 10px;">
-        <button id="logout-btn" style="background-color: #f44336; color: white;">Logout</button>
+    <!-- 1. NAVIGATION BAR -->
+    <nav class="navbar">
+        <span class="logo">ParkSmart 🚗</span>
+        <div class="nav-buttons">
+            <button id="nav-signup-link" class="btn-nav">Sign Up</button>
+            <button id="nav-login-link" class="btn-nav">Login</button>
+            <button id="logout-btn" class="btn-danger">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- 2. STATUS MESSAGES (Success/Error) -->
+        <p id="response-message" class="status-text"></p>
+
+        <!-- 3. AUTHENTICATION SECTION -->
+        <div class="auth-container">
+            <!-- SIGNUP CARD (Visible by default) -->
+            <div id="signup-card" class="card">
+                <h3>Create Account ✨</h3>
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="Username">
+                    <input type="email" id="email" placeholder="Email">
+                    <!-- 'new-password' tells the browser to stop auto-filling old emails here -->
+                    <input type="password" id="password" placeholder="Password" autocomplete="new-password">
+                    <button id="signup-btn" class="btn-primary">Sign Up</button>
+                </div>
+            </div>
+
+
+            <!-- LOGIN CARD (Hidden by default in CSS) -->
+            <div id="login-card" class="card hidden-section">
+                <h3>Welcome Back!</h3>
+                <div class="input-group">
+                    <input type="email" id="login-email" placeholder="Email" autocomplete="username">
+                    <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+                    <button id="login-btn" class="btn-primary">Login</button>
+                </div>
+            </div>
+            
+            <div class="bg-icon-car">🚗</div>
+            <div class="bg-icon-park">🅿️</div>
+
+        </div>
+
+        <!-- 4. ADMIN DASHBOARD (Hidden until login) -->
+        <div id="admin-dashboard" class="hidden-section">
+            
+            <!-- PARKING ENTRY CONTROL -->
+            <div id="finance-section" class="card main-card">
+                <h3>🏁 Parking Entry Control</h3>
+                <p class="subtitle">Assign slot and start session timer</p>
+
+                <div class="admin-controls">
+
+                    <input type="text" id="userId" placeholder="Enter User ID">
+
+                    <div class="vehicle-row">                            
+                        <input type="text" id="vehicleType-select" placeholder="Enter Vehicle Type" readonly>
+                        <span class="arrow-wrapper"></span>
+                            <select id="vehicle-type-dropdown" onchange="document.getElementById('vehicleType-select').value = this.options[this.selectedIndex].text">
+                                <option value="" selected disabled> Select Vehicle Type </option>
+                                <option value="2-wheeler">🏍️ 2-Wheeler</option>
+                                <option value="4-wheeler">🚗 4-Wheeler</option>
+                                <option value="6-wheeler">🚛 6-Wheeler</option>
+                            </select>
+                    </div>
+
+                    <div class="parking-row">                            
+                        <input type="text" id="parkingType-select" placeholder="Enter Parking Type" readonly>
+                        <span class="arrow-wrapper"></span>
+                            <select id="parking-type-dropdown" onchange="document.getElementById('parkingType-select').value = this.options[this.selectedIndex].text">
+                                <option value="" selected disabled> Select Parking Type </option>
+                                <option value="WalkIn">Walk-in</option>
+                                <option value="Booked">Booking</option>
+                            </select>
+                    </div>                      
+
+
+                    <div class="time-container" id="booking-time-section">
+
+                        <div class="time-block">
+                            <h4>Entry Date & Time</h4>
+                            <div class="date-row">
+                                <input type="date" id="entry-date">
+                            </div>
+
+                            <div class="clock-row">
+                                <div class="select-group">
+                                    <select id="entry-hour">
+                                        <option value="1">01</option><option value="2">02</option>
+                                        <option value="3">03</option><option value="4">04</option>
+                                        <option value="5">05</option><option value="6">06</option>
+                                        <option value="7">07</option><option value="8">08</option>
+                                        <option value="9">09</option><option value="10">10</option>
+                                        <option value="11">11</option><option value="12" selected>12</option>
+                                    </select>
+                                    <select id="entry-minute">
+                                        <option value="0">00</option>
+                                        <option value="30">30</option>
+                                    </select>
+                                    <select id="entry-period">
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="time-block">
+                            <h4>Exit Date & Time</h4>
+                            <div class="date-row">
+                                <input type="date" id="exit-date">
+                            </div>
+
+                            <div class="clock-row">
+                                <div class="select-group">
+                                    <select id="exit-hour">
+                                        <option value="1">01</option><option value="2">02</option>
+                                        <option value="3">03</option><option value="4">04</option>
+                                        <option value="5">05</option><option value="6">06</option>
+                                        <option value="7">07</option><option value="8">08</option>
+                                        <option value="9">09</option><option value="10">10</option>
+                                        <option value="11">11</option><option value="12" selected>12</option>
+                                    </select>
+                                    <select id="exit-minute">
+                                        <option value="0">00</option>
+                                        <option value="30">30</option>
+                                    </select>
+                                    <select id="exit-period">
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+        
+
+                    <p id="error-message" style="color: #B76E79;"></p>
+
+
+                    <button id="log-entry-btn" class="btn-success">Record Entry</button>
+                </div>
+                <p id="finance-message" class="status-text"></p>
+            </div>  <!-- End finance-section -->              
+
+                    
+
+
+            <!-- STATS & ANALYTICS -->
+            <div class="stats-grid">
+
+                <div id="revenue-report" class="stat-card revenue">
+                    <span class="stat-label">Total Revenue</span>
+
+                    <!-- Main revenue amount in BDT -->
+                    <span class="stat-value">BDT <span id="total-revenue">0</span></span>
+
+                    <!-- Currency selector for external API conversion -->
+                    <select id="currency-selector" class="revenue-currency-selector">
+                        <option value="BDT" selected>BDT</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+
+                    <!-- Converted revenue will appear here -->
+                    <p id="converted-revenue" class="converted-revenue-text"></p>
+
+                    <button id="analytics-btn" class="btn-outline report-btn" onclick="window.location.href='report.html'">
+                        Generate Full Report
+                    </button>
+                           
+                    <!-- window.location.href = 'report.html'  means: “Browser, go to the report.html page.” -->
+
+                </div>                
+
+
+                <div id="counter-box" class="stat-card capacity">
+                    <span class="stat-label">Current Occupancy</span>
+                    <span class="stat-value"><span id="active-cars-count">0</span> Vehicles</span>
+                </div>
+
+            </div>
+
+
+            <!-- DAILY REVENUE REPORT SECTION -->
+            <!-- This is hidden at first. app.js will show it when we click Generate Daily Report. -->
+            <div id="daily-report-section" class="card table-card daily-report-section hidden-section">
+
+                <div class="daily-report-header">
+                    <div>
+                        <h2>Detailed Daily Revenue Report</h2>
+                        <p id="daily-report-subtitle" class="table-result-message">
+                            Click Generate Daily Report to view business details.
+                        </p>
+                    </div>
+
+                    <button id="close-report-btn" class="table-action-btn">
+                        Close
+                    </button>
+                </div>
+
+                <!-- Small summary cards for the first simple version -->
+                <div class="daily-report-summary-grid">
+
+                    <div class="daily-report-mini-card">
+                        <span class="stat-label">Total Revenue</span>
+                        <span id="report-total-revenue" class="daily-report-value">BDT 0</span>
+                    </div>
+
+                    <div class="daily-report-mini-card">
+                        <span class="stat-label">Total Cars Served</span>
+                        <span id="report-total-cars" class="daily-report-value">0</span>
+                    </div>
+
+                    <div class="daily-report-mini-card">
+                        <span class="stat-label">Average Stay</span>
+                        <span id="report-average-stay" class="daily-report-value">0 hour(s)</span>
+                    </div>
+
+                    <div class="daily-report-mini-card">
+                        <span class="stat-label">Most Used Vehicle</span>
+                        <span id="report-most-used-vehicle" class="daily-report-value">N/A</span>
+                    </div>
+
+                </div>
+
+                <div class="table-wrapper daily-report-table-wrapper">
+                    <table id="daily-report-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Vehicle Type</th>
+                                <th>Parking Type</th>
+                                <th>Duration</th>
+                                <th>Expected Fee</th>
+                                <th>Penalty Fee</th>
+                                <th>Cancellation Fee</th>
+                                <th>Total Paid</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="daily-report-body">
+                            <tr>
+                                <td colspan="10">No report generated yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+
+
+            <!-- LIVE ACTIVITY TABLE -->
+            <div id="activity-log-section" class="card table-card">
+                <h2>Live Parking Activity</h2>
+
+                <div class="table-wrapper">
+
+                    <div class="table-filters">
+
+                        <!-- Filter 1: Parking Type -->
+                        <!-- This chooses whether we show all, only Booking, or only Walk-in -->
+                        <select id="parking-filter">
+                            <option value="All" selected disabled>Parking Type</option>                   
+                            <option value="All"> All </option>                 
+                            <option value="Booked">Booking</option>
+                            <option value="WalkIn">Walk-in</option>
+                        </select>                    
+
+                        <!-- Filter 2: Status -->
+                        <!-- This chooses whether we show All, Booked, Parked, Paid, etc. -->
+                        <select id="status-filter">
+                            <option value="All" selected disabled>Status</option>                   
+                            <option value="All"> All </option>
+                            <option value="Booked">Booked</option>
+                            <option value="Active">Parked</option>
+                            <option value="Completed">Paid</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="Overstay">Overstay</option>
+                        </select>
+
+                        <!-- Filter 3: Vehicle Type -->
+                        <!-- This chooses whether we show all vehicles or only bike/car/truck -->
+                        <select id="vehicle-filter">
+                            <option value="All" selected disabled>Vehicle Type</option>                               
+                            <option value="All"> All </option> 
+                            <option value="🏍️ 2-Wheeler">🏍️ 2-Wheeler</option>
+                            <option value="🚗 4-Wheeler">🚗 4-Wheeler</option>
+                            <option value="🚛 6-Wheeler">🚛 6-Wheeler</option>
+                        </select>
+
+                           
+                        <!-- Filter 4: From Date -->
+                        <div class="table-date-filter-group">
+                            <label for="from-date-filter">From:</label>
+                            <input type="date" id="from-date-filter">                 <!-- This is the earliest date we want to show. -->
+                        </div>
+
+                        <!-- Filter 5: To Date -->
+                        <div class="table-date-filter-group">
+                            <label for="to-date-filter">To:</label>
+                            <input type="date" id="to-date-filter">                      <!-- This is the latest date we want to show. -->
+                        </div>
+
+                        <!-- Filter 6: Row Limit -->
+                        <!-- This controls how many records the table shows. -->
+                        <select id="limit-filter">
+                            <option value="10" selected disabled>Show</option>
+                            <option value="10"> 10 </option>
+                            <option value="20"> 20 </option>
+                            <option value="50"> 50 </option>
+                            <option value="100"> 100 </option>
+                            <option value="200"> 200 </option>
+                            <option value="All"> All </option>
+                        </select>                    
+                        
+                    </div>
+
+                    <p id="table-result-message" class="table-result-message"></p>
+
+
+                    <table id="activity-table">                        
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Vehicle Type</th>
+                                <th>Entry Time</th>
+                                <th>Expected Exit</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                                <th>Receipt</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="activity-body">
+                            <!-- Data from app.js will appear here -->
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div> <!-- End Admin Dashboard -->
+
+    </div> <!-- End Container -->
+
+
+    <div id="receipt-modal" class="custom-modal receipt-printable hidden-section">
+
+        <!-- Shared modal card style + receipt-specific style -->
+        <div class="custom-card receipt-card">
+
+            <!-- Receipt title will be changed by JavaScript -->
+            <h3 id="receipt-modal-title">Parking Receipt</h3>
+
+            <!-- Receipt details will be placed here by JavaScript -->
+            <pre id="receipt-modal-body"></pre>
+
+            <!-- Close button -->
+            <button class="table-action-btn" onclick="closeReceiptModal()">Close</button>
+
+        </div>
     </div>
 
-    <h2>Welcome to ParkSmart 🚗</h2>
-    
-    <!-- 2. THE "HELLO! I'M NEW" SECTION (SIGNUP)  -->
-    <!-- This is where brand new people tell us their names and passwords. -->
-    <div id="signup-form">
-        <h3>Create an Account</h3>
-        <input type="text" id="username" placeholder="Username">
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button id="signup-btn">Sign Up</button>
+
+    <!-- MESSAGE MODAL -->
+    <!-- This modal is for normal messages/errors. It should NOT be printed. -->
+    <div id="message-modal" class="custom-modal no-print hidden-section">
+
+        <!-- Shared modal card style + message-specific style -->
+        <div class="custom-card message-card">
+
+            <!-- Message title will be changed by JavaScript -->
+            <h3 id="message-modal-title">Message</h3>
+
+            <!-- Message text will be placed here by JavaScript -->
+            <p id="message-modal-body"></p>
+
+            <!-- Close button -->
+            <button class="table-action-btn" onclick="closeMessageModal()">OK</button>
+
+        </div>
     </div>
-
-    <hr> <!-- This is just a gray line to keep things tidy! -->
-
-    <!-- 3. THE "I'M BACK!" SECTION (LOGIN)  -->
-    <!-- If you already have an account, you type your secret keys here. -->
-    <div id="login-form">
-        <h3>Login to ParkSmart</h3>
-        <input type="email" id="login-email" placeholder="Email">
-        <input type="password" id="login-password" placeholder="Password">
-        <button id="login-btn">Login</button>
-    </div>
-
-    <!-- This little paragraph below shows messages like "Success!" or "Wrong Password!" -->
-    <p id="response-message"></p>
-
-    <hr> 
-    
-
-
-    <!-- 4. THE "ADMIN'S CLIPBOARD" (LOGGING ENTRY)  -->
-    <!-- Feature 15: When a car arrives at the gate, the Admin uses this to start the timer! -->
-    <div id="finance-section">
-        <h3>Admin: Log Parking Entry (Feature 15)</h3>
-        <p style="font-size: 0.8em; color: gray;">(Copy a User ID from your Database and paste it here!)</p>
-        <input type="text" id="userId" placeholder="Paste User ID here">
-        <input type="number" id="hourlyRate" placeholder="Price per hour" value="100">
-        <button id="log-entry-btn">Record Entry</button>
-    </div>
-
-    <!-- This shows a message when the car is successfully recorded. -->
-    <p id="finance-message"></p>
-
-    <hr>
-
-    <!-- 5. THE "MONEY BOX" (REVENUE REPORT)  -->
-    <!-- Feature 15: This green box adds up all the money we've earned today! -->
-    <div id="revenue-report" style="background-color: #e8f5e9; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #c8e6c9;">
-       <strong>Total Revenue Collected: BDT <span id="total-revenue">0</span></strong>
-    </div>
-
-
-    <!-- Feature 18 Button -->
-    <div style="margin-bottom: 20px;">
-        <button id="analytics-btn" style="background-color: #4caf50;">Generate Daily Report</button>
-    </div>
-
-    <!-- Live Car Counter -->
-    <div id="counter-box" style="background-color: #e3f2fd; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #bbdefb; display: inline-block;">
-        <strong>Current Cars in Lot: <span id="active-cars-count">0</span></strong>
-    </div>
-
-
-    <!-- 6. THE "LIVE VIEW" TABLE  -->
-    <!-- Feature 15 & 17: This list shows us EVERYONE who is parked right now. -->
-    <div id="activity-log-section">
-        <h3>Live Parking Activity (Feature 15)</h3>
-        <table border="1" id="activity-table" style="width: 100%; text-align: left;">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Entry Time</th>
-                    <th>Status</th>
-                    <th>Action</th> <!-- This is where the "Check Out" button will pop up! -->
-                </tr>
-            </thead>
-            <tbody id="activity-body">
-                <!-- Our JavaScript will magically put rows of data here! -->
-            </tbody>
-        </table>
-    </div>
-
-    <!-- 7. THE BRAIN -->
-    <!-- This links to your app.js file which has all the logic. -->
+    <!-- THE BRAIN -->
     <script src="app.js"></script>
-
 </body>
 </html>

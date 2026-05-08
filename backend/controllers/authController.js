@@ -1,45 +1,31 @@
-const User = require('../models/User'); // Import our "Library Card" (Model)
-const bcrypt = require('bcryptjs');     // Import the "Scrambler" tool
+const User = require('../models/User'); 
+const bcrypt = require('bcryptjs');
+// Step 1: Add the JWT tool
+const jwt = require('jsonwebtoken'); 
 
-// This function handles the "Sign Up" logic
+// --- SIGNUP LOGIC (Exactly as you wrote it) ---
 exports.signup = async (req, res) => {
     try {
-        // 1. Get the data from the user (from the website)
         const { username, email, password } = req.body;
-
-        // 2. Security Check: Check if user exists BEFORE hashing
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: "That email is already registered!" });
         }
-
-        // 3. Security Check: Scramble the password so it's safe
-        // We "hash" it so even we can't see the real password!
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-
-
-        // 4. Create a new User using our Model
         const newUser = new User({
             username: username,
             email: email,
-            password: hashedPassword // Save the scrambled one, not the real one!
+            password: hashedPassword 
         });
-
-        // 4. Save the user into the MongoDB database
         await newUser.save();
-
-        // 5. Tell the user "Success!"
         res.status(201).json({ message: "User created successfully! Welcome to ParkSmart." });
-
     } catch (error) {
-        // If something goes wrong (like a duplicate email), tell the user why
         res.status(500).json({ error: error.message });
     }
 };
 
-
-// LOGIN LOGIC
+// --- LOGIN LOGIC (Safe Update) ---
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -48,20 +34,28 @@ exports.login = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Wrong password!" });
-        
-        // We send back the role so the frontend knows what to show/hide
-        res.status(200).json({ 
-            message: "Login successful!", 
-            role: user.role, 
-            username: user.username 
+
+        // Step 2: Create the "Digital Key" (Token)
+        // We put the User ID and Role inside the key
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            'secret_key_123', 
+            { expiresIn: '1d' }
+        );
+
+        // Step 3: Send back the response (Added token: token)
+        res.status(200).json({
+            message: "Login successful!",
+            token: token, 
+            role: user.role,
+            username: user.username
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-
-// LOGOUT LOGIC
+// --- LOGOUT LOGIC (Exactly as you wrote it) ---
 exports.logout = async (req, res) => {
     res.status(200).json({ message: "Logged out successfully." });
 };

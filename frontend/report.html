@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkSmart Revenue Report</title>
+
+    <!-- Reuse your same design files -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="background.css">
+
+    <!-- Same font as your main page -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="report-page">
+
+    <!-- Simple navbar for report page -->
+    <nav class="navbar">
+        <span class="logo">ParkSmart Revenue Report 📊</span>
+
+        <div class="nav-buttons">
+            <button class="btn-nav" onclick="window.location.href='index.html'">
+                Back to Dashboard
+            </button>
+        </div>
+    </nav>
+
+
+    <div class="container report-container">
+
+        <div class="card table-card report-page-card">
+
+            <div class="report-page-header">
+                <div>
+                    <h2>Detailed Revenue Report</h2>
+                    <p id="report-generated-time" class="table-result-message">
+                        Loading report...
+                    </p>
+                </div>
+
+                <button class="table-action-btn" onclick="window.print()">
+                    Print
+                </button>
+            </div>
+
+
+            <!-- Report date filters -->
+            <div class="report-filter-bar">
+
+                <div class="report-filter-group">
+                    <label for="report-from-date">From Date</label>
+                    <input type="date" id="report-from-date">
+                </div>
+
+                <div class="report-filter-group">
+                    <label for="report-to-date">To Date</label>
+                    <input type="date" id="report-to-date">
+                </div>
+
+                <button id="apply-report-filter" class="table-action-btn">
+                    Apply
+                </button>
+
+                <button id="reset-report-filter" class="table-action-btn">
+                    Reset
+                </button>
+
+            </div>
+
+            <!-- JavaScript will update this message -->
+            <p id="report-filter-message" class="table-result-message">
+                Showing all records.
+            </p>
+
+
+            <!-- Summary cards -->
+            <div class="daily-report-summary-grid">
+
+                <div class="daily-report-mini-card">
+
+                    <div class="summary-card-top">
+                        <span class="stat-label">Total Revenue</span>
+
+                        <div class="summary-currency-wrap">
+                            <select id="summary-currency-selector" class="summary-currency-selector">
+                                <option value="BDT" selected disabled>💱</option>
+                                <option value="BDT">BDT</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+
+                            <span class="summary-currency-arrow"></span>
+                        </div>
+                    </div>
+
+                    <span id="report-total-revenue" class="daily-report-value">BDT 00</span>
+
+                </div>
+
+                
+                <div class="daily-report-mini-card">
+                    <span class="stat-label">Total Cars Served</span>
+                    <span id="report-total-cars" class="daily-report-value">0</span>
+                </div>
+
+                <div class="daily-report-mini-card">
+                    <span class="stat-label">Average Stay</span>
+                    <span id="report-average-stay" class="daily-report-value">0 hour(s)</span>
+                </div>
+
+                <div class="daily-report-mini-card">
+                    <span class="stat-label">Most Used Vehicle</span>
+                    <span id="report-most-used-vehicle" class="daily-report-value">N/A</span>
+                </div>
+
+            </div>
+
+            <!-- Error message if something fails -->
+            <p id="report-error-message" class="status-text"></p>
+
+            <!-- Report table -->
+            <div class="table-wrapper daily-report-table-wrapper">
+                <table id="daily-report-table">
+                    <thead>
+                        <tr>
+                            <th>Ref ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Vehicle Type</th>
+                            <th>Parking Type</th>
+                            <th>Duration</th>
+                            <th>Expected Fee</th>
+                            <th>Penalty Fee</th>
+                            <th>Cancellation Fee</th>
+                            <th>Total Paid</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="daily-report-body">
+                        <tr>
+                            <td colspan="11">Loading report...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Only report page JS -->
+    <script src="report.js"></script>
+</body>
+</html>
