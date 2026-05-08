@@ -30,7 +30,8 @@ const parkingSlotRoutes = require('./routes/parkingSlotRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const recommendationRoutes = require('./routes/recommendationRoutes');
 const financeRoutes = require('./routes/financeRoutes');
-
+const vehicleRoutes = require('./routes/vehiclesRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 
 // --- ROUTES ---
@@ -49,6 +50,12 @@ app.use('/api/reservations', reservationRoutes);
 // --- RECOMMENDATION ROUTES (Feature 20) ---
 //  shows frequently used slots
 app.use('/api/recommendations', recommendationRoutes);
+
+//---Vehicle Routes---
+app.use('/api/vehicles', vehicleRoutes);
+
+//---Notification Routes---
+app.use('/api/notifications', notificationRoutes);
 
 //---Finance Routes---
 app.use('/api/finance', financeRoutes);

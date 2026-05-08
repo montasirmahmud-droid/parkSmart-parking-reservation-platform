@@ -110,7 +110,11 @@ loginBtn.addEventListener('click', async () => {
             responseMsg.style.color = "#B76E79";
             
             // Save the role in the browser so system can remember it even if we refresh
-            localStorage.setItem('userRole', data.role);
+            //localStorage.setItem('userRole', data.role);
+            
+            // Save the token and role in the browser so system can remember login
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("userRole", data.role);
             
             // Show the dashboard
             checkPermissions();
@@ -897,8 +901,12 @@ logoutBtn.addEventListener('click', async () => {
         return;
     }
 
-    // When we logout, we clear our "Library Card" (role) so the next person can't see our stuff
-    localStorage.removeItem('userRole'); 
+    // When we logout, we clear our role so the next person can't see our stuff
+    //localStorage.removeItem('userRole'); 
+
+    // When we logout, we clear our saved login info
+    localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
     clearAllMessages();
 
     window.location.hash = "login";  // This tells the browser: "When you reload, go straight to #login"

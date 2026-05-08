@@ -39,7 +39,8 @@ exports.login = async (req, res) => {
         // We put the User ID and Role inside the key
         const token = jwt.sign(
             { id: user._id, role: user.role },
-            'secret_key_123', 
+            process.env.JWT_SECRET || "dev-secret",
+            //'secret_key_123',  //previously used
             { expiresIn: '1d' }
         );
 
