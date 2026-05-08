@@ -1,6 +1,8 @@
-import ParkingSlot from "../models/ParkingSlot.js";
+const ParkingSlot = require("../models/ParkingSlot");
+//import ParkingSlot from "../models/ParkingSlot.js";
 
-export const getSlotById = async (req, res) => {
+//export const getSlotById = async (req, res) => {
+exports.getSlotById = async (req, res) => {
   try {
     const slot = await ParkingSlot.findById(req.params.id);
     if (!slot) return res.status(404).json({ message: "Slot not found" });
