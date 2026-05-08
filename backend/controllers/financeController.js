@@ -1,41 +1,61 @@
-const Finance = require('../models/Finance');
+const User = require('../models/User'); 
+const bcrypt = require('bcryptjs');
+// Step 1: Add the JWT tool
+const jwt = require('jsonwebtoken'); 
 
-// Feature 15: Create a new activity log entry when a car enters
-exports.logEntry = async (req, res) => {
+// --- SIGNUP LOGIC (Exactly as you wrote it) ---
+exports.signup = async (req, res) => {
     try {
-        const { userId, hourlyRate } = req.body;
-        const newLog = new Finance({
-            userId,
-            hourlyRate // Feature 17: Apply the current rate
+        const { username, email, password } = req.body;
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "That email is already registered!" });
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const newUser = new User({
+            username: username,
+            email: email,
+            password: hashedPassword 
         });
-        await newLog.save();
-        res.status(201).json({ message: "Entry logged successfully", data: newLog });
+        await newUser.save();
+        res.status(201).json({ message: "User created successfully! Welcome to ParkSmart." });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-// Feature 17: Update the parking rate (Admin/Manager task)
-exports.updateRate = async (req, res) => {
+// --- LOGIN LOGIC (Safe Update) ---
+exports.login = async (req, res) => {
     try {
-        const { recordId, newRate } = req.body;
-        const updatedRecord = await Finance.findByIdAndUpdate(
-            recordId, 
-            { hourlyRate: newRate }, 
-            { new: true }
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ message: "User not found!" });
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ message: "Wrong password!" });
+
+        // Step 2: Create the "Digital Key" (Token)
+        // We put the User ID and Role inside the key
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            'secret_key_123', 
+            { expiresIn: '1d' }
         );
-        res.status(200).json({ message: "Rate updated", data: updatedRecord });
+
+        // Step 3: Send back the response (Added token: token)
+        res.status(200).json({
+            message: "Login successful!",
+            token: token, 
+            role: user.role,
+            username: user.username
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-// Feature 15: Get all logs (The Activity History)
-exports.getLogs = async (req, res) => {
-    try {
-        const logs = await Finance.find().populate('userId', 'username');
-        res.status(200).json(logs);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+// --- LOGOUT LOGIC (Exactly as you wrote it) ---
+exports.logout = async (req, res) => {
+    res.status(200).json({ message: "Logged out successfully." });
 };
