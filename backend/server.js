@@ -2,7 +2,7 @@ const express = require('express'); // 1. Load the tool
 const mongoose = require('mongoose'); 
 const cors = require('cors');        // Load the security pass
 
-const app = express();              // 2. NOW start the "App" (the car is built)
+const app = express();              // 2. NOW start the "App"
 
 // --- MIDDLEWARE (The settings) ---
 app.use(cors());                    // Now it's okay to use cors
