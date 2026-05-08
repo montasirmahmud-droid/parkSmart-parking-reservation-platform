@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express'); // 1. Load the tool
 const mongoose = require('mongoose'); 
 const cors = require('cors');        // Load the security pass
@@ -13,7 +15,7 @@ app.use(express.json());            // Lets the server read JSON data
 //const dbURI = 'mongodb://localhost:27017/parksmart'
 
 // from this part is for temp database
-const dbURI = "mongodb://SysAdmin_1:SysAdmin12345@ac-v0rralt-shard-00-00.zyigojp.mongodb.net:27017,ac-v0rralt-shard-00-01.zyigojp.mongodb.net:27017,ac-v0rralt-shard-00-02.zyigojp.mongodb.net:27017/?ssl=true&replicaSet=atlas-xlu1r0-shard-0&authSource=admin&appName=ParkSmartCluster"
+const dbURI = process.env.MONGO_URI;
 
 
 mongoose.connect(dbURI)
@@ -55,7 +57,7 @@ app.use('/api/finance', financeRoutes);
 
 
 // --- START ENGINE ---
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
