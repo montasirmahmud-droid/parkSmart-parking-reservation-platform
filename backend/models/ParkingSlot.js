@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+//import mongoose from "mongoose";
 
 const parkingSlotSchema = new mongoose.Schema({
   slotId: { type: String, required: true },
