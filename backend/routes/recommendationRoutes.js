@@ -9,4 +9,5 @@ const router = express.Router();
 
 router.get("/", getRecommendedSlots);
 
-export default router;
+module.exports = router;
+//export default router;
