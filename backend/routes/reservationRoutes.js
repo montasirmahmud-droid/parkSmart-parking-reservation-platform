@@ -8,4 +8,5 @@ const router = express.Router();
 
 router.put("/extend/:reservationId", extendReservation);
 
-export default router;
+module.exports = router;
+//export default router;
