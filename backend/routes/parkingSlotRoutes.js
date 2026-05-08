@@ -8,5 +8,5 @@ const router = express.Router();
 
 router.get("/:id", getSlotById);
 
-export default router;
-
+module.exports = router;
+//export default router;
