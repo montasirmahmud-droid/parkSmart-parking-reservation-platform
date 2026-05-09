@@ -1,0 +1,55 @@
+/* --- THE TRAFFIC CONE --- */
+body::before {
+    content: "⚠️"; /* Using an emoji is the easiest way to add the icon without an image file */
+    position: fixed;
+    bottom: -50px;
+    right: -10px;
+    font-size: 300px; /* Very big! */
+    opacity: 0.07;   /* We keep it soft so you can still read your text */ /*0.08*/
+    z-index: -1;     /* Puts it BEHIND the cards */
+    transform: rotate(-15deg);
+    filter: saturate(5); /* This makes the orange VERY saturated like you asked */ /*6*/
+}
+
+
+/* Let's add a second smaller one on the top left */
+body::after {
+    content: "🚧";
+    position: fixed;
+    top: 50px;
+    left: 25px;
+    font-size: 200px;
+    opacity: 0.05;    /*0.06*/
+    z-index: -1;
+    transform: rotate(20deg);
+    filter: saturate(8);
+}
+
+
+/* Floating Car (Bottom Left) */
+.bg-icon-car {
+    content: "🚗";
+    position: fixed;
+    bottom: 40px;
+    left: 80px;
+    font-size: 180px;
+    opacity: 0.08;
+    filter: saturate(5); /* Makes the red car POP */
+    z-index: -1;
+    transform: rotate(-15deg);
+    pointer-events: none; /* Mouse clicks go through it */
+}
+
+/* Parking Sign (Middle Right) */
+.bg-icon-park {
+    content: "🅿️";
+    position: fixed;
+    top: 18%;
+    right: 120px;
+    font-size: 100px;
+    opacity: 0.08;
+    filter: saturate(4); /* Makes the blue sign VIVID */
+    z-index: -1;
+    transform: rotate(-12deg);
+    pointer-events: none;
+}
