@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-//import mongoose from "mongoose";
+import mongoose from "mongoose";
 
 const reservationSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -8,5 +7,4 @@ const reservationSchema = new mongoose.Schema({
   endTime: Date
 });
 
-//export default mongoose.model("Reservation", reservationSchema);
-module.exports = mongoose.model("Reservation", reservationSchema);
+//module.exports = mongoose.model("Reservation", reservationSchema);
