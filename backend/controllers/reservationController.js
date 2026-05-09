@@ -1,8 +1,6 @@
-const Reservation = require("../models/Reservation");
-//import Reservation from "../models/Reservation.js";
+import Reservation from "../models/Reservation.js";
 
-//export const extendReservation = async (req, res) => {
-exports.extendReservation = async (req, res) => {  
+export const extendReservation = async (req, res) => {
   try {
     const { reservationId } = req.params;
     const { newEndTime } = req.body;
