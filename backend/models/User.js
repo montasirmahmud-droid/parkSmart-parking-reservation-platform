@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     //Define user access levels: default is 'Customer', but can be upgraded to Admin/Manager roles
     role: { 
         type: String, 
-        enum: ['Customer', 'FinanceAdmin', 'ParkingManager', 'SystemAdmin'], 
+        enum: ['Customer', 'FinanceAdmin', 'ParkingManager', 'SystemAdmin', 'Admin'], 
         default: 'Customer' 
     },
 
