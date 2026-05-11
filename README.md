@@ -12,7 +12,7 @@ ParkSmart is an integrated parking reservation and monitoring platform designed 
 * **Member Name 1: Tasmia hossain** (ID: 22201742) 
 * **Member Name 2: Montasir Mahmud** (ID: 23301119)
 * **Member Name 3: Kamrul Islam Kamran** (ID: 24341149)
-* **Member Name 4: Md. Sajidur Rahman** (22101791)
+* **Member Name 4: Md. Sajidur Rahman** (ID: 22101791)
 
 ## 💻 Tech Stack
 * **Frontend:** HTML, CSS, JavaScript, and React.js  
