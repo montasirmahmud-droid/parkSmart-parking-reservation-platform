@@ -23,6 +23,6 @@ ParkSmart is an integrated parking reservation and monitoring platform designed 
   MongoDB Atlas was used as the cloud database, while Mongoose was used to define schemas and interact with the database. It stores users, finance/activity logs, vehicles, reservations, parking slots, and notification data.
 * **External API:** ExchangeRate API using `axios`  
   (Used in the revenue report feature to convert total revenue from BDT to other currencies such as USD and EUR.)
-**Authentication & Authorization:** bcrypt.js and JSON Web Token (JWT)  
+* **Authentication & Authorization:** bcrypt.js and JSON Web Token (JWT)  
    (bcrypt.js is used to hash user passwords, and JWT is used to generate login tokens and support role-based access.)
 
