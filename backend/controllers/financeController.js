@@ -113,7 +113,16 @@ exports.previewEntry = async (req, res) => {
             PARKING_SETTINGS.penaltyBlockRate * multiplier
         );
 
-        const selectedEntryTime = entryTime ? new Date(entryTime) : new Date();
+        const finalCancelFeeRate = roundUpToNearest5(
+            PARKING_SETTINGS.cancellationBlockRate * multiplier
+        );        
+
+
+        if (exitTime && !entryTime) {
+            return res.status(400).json({ message: "Entry time is required for booked parking." });
+        }        
+
+        const selectedEntryTime = entryTime ? new Date(entryTime) : new Date();        
         const selectedExpectedExitTime = exitTime ? new Date(exitTime) : null;
 
         const parkingType = selectedExpectedExitTime ? "Booked" : "WalkIn";
@@ -185,7 +194,7 @@ exports.previewEntry = async (req, res) => {
 // Feature 15: Create a new activity log entry when a car enters
 exports.logEntry = async (req, res) => {
     try {
-        const { userId, hourlyRate, vehicleType, expectedDuration, entryTime, exitTime } = req.body;
+        const { userId, hourlyRate, vehicleType, entryTime, exitTime } = req.body;
 
         // 1. Make sure something was typed
         if (!userId) {
@@ -223,17 +232,30 @@ exports.logEntry = async (req, res) => {
             PARKING_SETTINGS.penaltyBlockRate * multiplier
         );
 
+        const finalCancelFeeRate = roundUpToNearest5(
+            PARKING_SETTINGS.cancellationBlockRate * multiplier
+        );
+
+
+
+
         // Using the time selected from frontend
-        const selectedEntryTime = entryTime ? new Date(entryTime) : new Date();
+        if (exitTime && !entryTime) {
+            return res.status(400).json({ message: "Entry time is required for booked parking." });
+        }        
+
+        const selectedEntryTime = entryTime ? new Date(entryTime) : new Date();         
         const selectedExpectedExitTime = exitTime ? new Date(exitTime) : null;
 
         const parkingType = selectedExpectedExitTime ? 'Booked' : 'WalkIn';
 
         // Booking rule: bookings must be made at least 1 hour before entry time
         const now = new Date();
-        const twoHoursFromNow = new Date(now.getTime() + PARKING_SETTINGS.bookingPreHour * 60 * 60 * 1000);
+        const bookingAllowedFrom = new Date(
+            now.getTime() + PARKING_SETTINGS.bookingPreHour * 60 * 60 * 1000
+        );        
 
-        if (selectedExpectedExitTime && selectedEntryTime < twoHoursFromNow) {
+        if (selectedExpectedExitTime && selectedEntryTime < bookingAllowedFrom) {
             return res.status(400).json({
                 message: `⚠️ Bookings must be made at least ${PARKING_SETTINGS.bookingPreHour} hour(s) before entry time.`
             });
@@ -273,6 +295,7 @@ exports.logEntry = async (req, res) => {
             vehicleType: finalVehicleType,
             hourlyRate: finalHourlyRate,
             penaltyRatePer10Minutes: finalPenaltyRate,
+            cancellationFeePer30Minutes: finalCancelFeeRate,         
             gracePeriodinMinutes: PARKING_SETTINGS.gracePeriodinMinutes,
              
             entryTime: selectedEntryTime,
@@ -349,18 +372,28 @@ exports.cancelEntry = async (req, res) => {
             return res.status(404).json({ message: "Booking not found" });
         }
 
-        // Only Booked or Active records can be cancelled. Completed or already Cancelled records should not be cancelled again
-        if (record.status !== "Booked" && record.status !== "Active") {
-            return res.status(400).json({ message: "Only booked/active entries can be cancelled" });
+        // Only future booked records can be cancelled. Walk-in and already active/parked bookings must be checked out instead.
+        if (record.parkingType !== "Booked" || record.status !== "Booked") {
+            return res.status(400).json({
+                message: "Only future booked entries can be cancelled. Active parking must be checked out."
+            });
         }
-        
+
         const cancelTime = new Date();                                       // The exact time when admin/user clicked cancel
-
         const entryTime = new Date(record.entryTime);                          // The booked entry time
-        const expectedExitTime = new Date(record.expectedExitTime);           // The booked expected exit time
 
-        let cancellationFee = 0;                                             // Start with no cancellation fee        
-        let cancellationNote = "";                                           // This explains why the fee was charged or not charged
+        // If booking entry time already started, do not allow cancellation. It should be handled by Check Out instead.
+        if (cancelTime >= entryTime) {
+            return res.status(400).json({
+                message: "This booking has already started. Please use checkout instead of cancel."
+            });
+        }
+
+        const expectedExitTime = new Date(record.expectedExitTime);           // The booked expected exit time  
+
+        let cancellationFee = 0;
+        let cancellationNote = "";        
+
 
         // How many minutes before entry time the booking is being cancelled
         const minsBeforeEntry = Math.floor((entryTime - cancelTime) / (1000 * 60));
@@ -375,41 +408,21 @@ exports.cancelEntry = async (req, res) => {
         // CASE 2:
         // If cancelled less than 30 minutes before entry time, but before the car was supposed to enter, charge a small 30-minute fee.
         else if (cancelTime < entryTime) {
-            cancellationFee = roundUpToNearest5(0.5 * record.hourlyRate);
-            cancellationNote = `Cancelled within ${PARKING_SETTINGS.freeCancellationBeforeEntryMinutes} minutes before entry time. Charged ${PARKING_SETTINGS.freeCancellationBeforeEntryMinutes}-minutes fee.`;
+            cancellationFee = record.cancellationFeePer30Minutes;
+            cancellationNote = `Cancelled within ${PARKING_SETTINGS.freeCancellationBeforeEntryMinutes} minutes before entry time. Charged one cancellation block fee.`;
         }
 
         // CASE 3:
-        // If the booking time already started, then user pays for used time + a small remaining booking cancellation charge.
-        else {
-            const stayedMins = Math.floor((cancelTime - entryTime) / (1000 * 60));                     // How many minutes passed after entry time
-
-            // Convert used time into billable walk-in style hours. Example: 1h06m becomes 1.5 hours
-            const chargedHoursForUsedTime = calculateWalkInChargedHours(stayedMins);
-
-            const usedTimeFee = roundUpToNearest5(chargedHoursForUsedTime * record.hourlyRate);         // Fee for the time already used
-
-            // How much booked time is still left after cancelling
-            const remainingMins = Math.max(
-                0,
-                Math.floor((expectedExitTime - cancelTime) / (1000 * 60))
-            );
-
-            const remainingBlocks = Math.ceil(
-                remainingMins / PARKING_SETTINGS.cancellationBlockPeriod          // Count remaining booked time after cancellation in 30-minute blocks
-            );     
-
-            // Charge a fixed fee for each remaining cancellation block. Example: 3 blocks × 20 BDT = 60 BDT. 
-            const remainingCancellationFee = 
-                remainingBlocks * PARKING_SETTINGS.cancellationBlockRate;                   // Charge 20 BDT for each remaining 30-minute block
-
-            cancellationFee = usedTimeFee + remainingCancellationFee;                       // Final cancellation fee
-
-            cancellationNote = "Cancelled after entry time. Charged used time fee plus remaining booking cancellation fee.";
-        }
+        // If the booking time already started, one cannot anymore cancel, has to check out. 
+        // The user pays for used time + a small remaining booking cancellation charge.
+        // Fee for the time already used
+        // Count remaining booked time after cancellation in 30-minute blocks
+        // Charges a fixed fee for each remaining cancellation block. Example: 3 blocks × 20 BDT = 60 BDT. Charges 20 BDT for each remaining 30-minute block
+        //Final cancellation Fee = used Time Fee + remaining Cancellation Fee; 
 
         
-        record.actualExitTime = cancelTime;       // Save actual cancellation time        
+        record.actualExitTime = cancelTime;       // Save actual cancellation time   
+        record.cancelledAt = cancelTime;   
         record.cancellationFee = cancellationFee;     
         record.cancellationNote = cancellationNote;
         record.totalFee = cancellationFee;         // Since this record is cancelled, totalFee becomes the cancellation fee
@@ -437,6 +450,14 @@ exports.handleExit = async (req, res) => {
         const record = await Finance.findById(recordId).populate('userId', 'username');
         
         if (!record) return res.status(404).json({ message: "Record not found" });
+
+        if (record.status === "Completed") {
+            return res.status(400).json({ message: "This record is already completed." });
+        }
+
+        if (record.status === "Cancelled") {
+            return res.status(400).json({ message: "This record was cancelled and cannot be checked out." });
+        }
 
         const actualExitTime = new Date();                     // Right now- the real exiting time
         const entryTime = new Date(record.entryTime);         // When they arrived, booked entry time
@@ -481,15 +502,17 @@ exports.handleExit = async (req, res) => {
 
         let totalFee = 0;
 
-        if (isBooked) {
-            totalFee = record.expectedFee;
-        } else {
+        if (isBooked && actualExitTime >= expectedExitTime) {
+            totalFee = record.expectedFee;            
+        } else {                                                                        // If the booking time already started, then user pays for used time + a small remaining booking cancellation charge.
             const chargedHours = calculateWalkInChargedHours(actualStayMins);
             totalFee = roundUpToNearest5(chargedHours * record.hourlyRate);
         }
 
 
         // --- THE SMART PENALTY LOGIC ---
+        let cancellationNote = "";                                           // This explains why the fee was charged or not charged
+
         let penaltyFee = 0;
         let overstayMins = 0;
         let overstayBlocks = 0;
@@ -503,48 +526,74 @@ exports.handleExit = async (req, res) => {
         let chargedOverstayDuration = "0 minutes";
 
         if (isBooked){
-            rawOverstayMins = Math.max(
-                0,
-                Math.floor((actualExitTime - expectedExitTime) / (1000 * 60))
-            );
+            // If the booking time already started, then user pays for used time + a small remaining booking cancellation charge.
 
-            const receivedGraceMins = Math.min(rawOverstayMins, record.gracePeriodinMinutes);
-            receivedGracePeriod = formatMinutesDuration(receivedGraceMins);
+            if (actualExitTime<expectedExitTime) {        // If they left before the expected exit time, charges used time fee plus remaining booking cancellation fee. 
 
-            // Store/display overstay if the car left after expected exit time. This includes grace period too.      
-            if (rawOverstayMins > 0) {
-
-                //  Calculate how many PARKING_SETTINGS.penaltyBlockPeriod (10-minute blocks) they used (rounding up)
-                // Example: 11 mins over = 2 blocks. 5 mins over = 1 block.
-                overstayBlocks = Math.ceil(rawOverstayMins / PARKING_SETTINGS.penaltyBlockPeriod);
-
-                // Chargeable overstay minutes                
-                overstayMins = overstayBlocks * PARKING_SETTINGS.penaltyBlockPeriod;  //charged
-                //overstayMins = rawOverstayMins;
-
-                // Human-readable duration
-                overstayDuration = formatMinutesDuration(rawOverstayMins);
-                chargedOverstayDuration = formatMinutesDuration(overstayMins);
-
-            }
-
-
-
-            // Check if they are past the record.gracePeriodinMinutes (30-minute grace period). Only charge penalty if they passed the grace period
-            if (rawOverstayMins > record.gracePeriodinMinutes)  {
-                const taxableOverstayMins = rawOverstayMins - record.gracePeriodinMinutes;   // Subtract the gracePeriod (30 mins) and charge penalty only after grace period
-
-                const penaltyBlocks = Math.ceil(taxableOverstayMins / PARKING_SETTINGS.penaltyBlockPeriod);  // Calculate chargeable 10-minute blocks after grace period
-                
-                penalizedMinutes = penaltyBlocks * PARKING_SETTINGS.penaltyBlockPeriod;
-                penalizedDuration = formatOverstayDuration(penaltyBlocks);
-
-                penaltyFee = roundUpToNearest5(
-                    penaltyBlocks * record.penaltyRatePer10Minutes   //record.penaltyRatePer10Minutes already includes vehicle multiplier. 
+                // How much booked time is still left after cancelling
+                const remainingMins = Math.max(
+                    0,
+                    Math.floor((expectedExitTime - actualExitTime) / (1000 * 60))
                 );
+
+                const remainingBlocks = Math.round(
+                    remainingMins / PARKING_SETTINGS.cancellationBlockPeriod          // Count remaining booked time after cancellation in 30-minute blocks
+                );     
+
+                // Charge a fixed fee for each remaining cancellation block. Example: 3 blocks × 20 BDT = 60 BDT. 
+                const remainingCancellationFee = roundUpToNearest5(                           // Charge 20 BDT for each remaining 30-minute block
+                        remainingBlocks * record.cancellationFeePer30Minutes   //record.cancellationFeePer30Minutes already includes vehicle multiplier. 
+                    );                    
+
+                totalFee = totalFee + remainingCancellationFee;                       // Final cancellation fee
+
+                cancellationNote = "Cancelled after entry time. Charged used time fee plus remaining booking cancellation fee.";
             }
 
-            totalFee += penaltyFee;
+            else {          
+                rawOverstayMins = Math.max(
+                    0,
+                    Math.floor((actualExitTime - expectedExitTime) / (1000 * 60))
+                );
+
+                const receivedGraceMins = Math.min(rawOverstayMins, record.gracePeriodinMinutes);
+                receivedGracePeriod = formatMinutesDuration(receivedGraceMins);
+
+                // Store/display overstay if the car left after expected exit time. This includes grace period too.      
+                if (rawOverstayMins > 0) {
+
+                    //  Calculate how many PARKING_SETTINGS.penaltyBlockPeriod (10-minute blocks) they used (rounding up)
+                    // Example: 11 mins over = 2 blocks. 5 mins over = 1 block.
+                    overstayBlocks = Math.ceil(rawOverstayMins / PARKING_SETTINGS.penaltyBlockPeriod);
+
+                    // Chargeable overstay minutes                
+                    overstayMins = overstayBlocks * PARKING_SETTINGS.penaltyBlockPeriod;  //charged
+                    //overstayMins = rawOverstayMins;
+
+                    // Human-readable duration
+                    overstayDuration = formatMinutesDuration(rawOverstayMins);
+                    chargedOverstayDuration = formatMinutesDuration(overstayMins);
+
+                }
+
+
+
+                // Check if they are past the record.gracePeriodinMinutes (30-minute grace period). Only charge penalty if they passed the grace period
+                if (rawOverstayMins > record.gracePeriodinMinutes)  {
+                    const taxableOverstayMins = rawOverstayMins - record.gracePeriodinMinutes;   // Subtract the gracePeriod (30 mins) and charge penalty only after grace period
+
+                    const penaltyBlocks = Math.ceil(taxableOverstayMins / PARKING_SETTINGS.penaltyBlockPeriod);  // Calculate chargeable 10-minute blocks after grace period
+                    
+                    penalizedMinutes = penaltyBlocks * PARKING_SETTINGS.penaltyBlockPeriod;
+                    penalizedDuration = formatOverstayDuration(penaltyBlocks);
+
+                    penaltyFee = roundUpToNearest5(
+                        penaltyBlocks * record.penaltyRatePer10Minutes   //record.penaltyRatePer10Minutes already includes vehicle multiplier. 
+                    );
+                }
+
+                totalFee += penaltyFee;
+            }
         }
         
 
