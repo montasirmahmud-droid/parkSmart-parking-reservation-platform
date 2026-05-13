@@ -16,10 +16,10 @@ ParkSmart is an integrated parking reservation and monitoring platform designed 
 
 ## 💻 Tech Stack
 * **Frontend:** React.js
- (React.js is used across the frontend for the authentication pages, finance-admin dashboard, live parking activity table, revenue report page, slot details, vehicle details, reservation extension, notification, and recommended slot components.) 
-* **Backend:** Node.js with Express.js   
+   (React.js is used across the frontend for the authentication pages, finance-admin dashboard, live parking activity table, revenue report page, slot details, vehicle details, reservation extension, notification, and recommended slot components.) 
+* **Backend:** Node.js with Express.js
   (Used to create REST API routes for authentication, finance activity logs, parking slots, reservations, vehicles, and revenue reports.)
-* **Database:** MongoDB Atlas with Mongoose  
+* **Database:** MongoDB Atlas with Mongoose
   (MongoDB Atlas was used as the cloud database, while Mongoose was used to define schemas and interact with the database. It stores users, finance/activity logs, vehicles, reservations, parking slots, and notification data.)
 * **External API:** ExchangeRate API using `axios`  
   (Used in the revenue report feature to convert total revenue from BDT to other currencies such as USD and EUR.)
