@@ -30,20 +30,29 @@ const financeSchema = new mongoose.Schema(
         // Feature 17: Stores the current hourly rate for this specific parking session
         hourlyRate: { 
             type: Number, 
-            default: 100  // Standard rate: BDT100/hour
+            default: 100,  // Standard rate: BDT100/hour
+            min: 0
         },
         
-        penaltyRatePer10Minutes: {
+        cancellationFeePer30Minutes: {
             type: Number,
-            default: 25
+            default: 20,
+            min: 0
         },
 
-        //accessibilityVerified: {type: Boolean,default: false},  /// fututre plan
+        penaltyRatePer10Minutes: {
+            type: Number,
+            default: 25,
+            min: 0
+        },
+
+        //accessibilityVerified: {type: Boolean,default: false},  /// future plan
 
 
         gracePeriodinMinutes: {
             type: Number, 
-            default: 15
+            default: 15,
+            min: 0
         },
 
         //gracePeriod: {type: String, default: "30 minutes"},  
@@ -57,23 +66,25 @@ const financeSchema = new mongoose.Schema(
             default: Date.now 
         },
 
-        // Feature 15: Records exit time (null until they leave)
+        // Feature 15: Stores the planned/expected exit time for booked parking
         expectedExitTime: { 
             type: Date 
         },
 
         expectedDurationInHours: {
             type: Number,
-            default: 1.0    // Standard duration: 1hour
+            default: 0,    // Standard duration: 0 hours
+            min: 0
         },   
 
         expectedFee: {
             type: Number,
-            default: 0
+            default: 0,
+            min: 0
         },
 
 
-        //Records the actual exit time in case of a overstay(Grace Period included.)
+        //Records the actual exit time in case of an overstay(Grace Period included.)
         actualExitTime: {
             type: Date
         },
@@ -96,12 +107,14 @@ const financeSchema = new mongoose.Schema(
 
         penaltyFee: {
             type: Number,
-            default: 0
+            default: 0,
+            min: 0
         },
 
         totalFee: { 
             type: Number, 
-            default: 0 
+            default: 0,
+            min: 0
         },
         
 
@@ -119,7 +132,8 @@ const financeSchema = new mongoose.Schema(
 
         cancellationFee: {
             type: Number,
-            default: 0
+            default: 0,
+            min: 0
         },
 
         cancellationNote: {
