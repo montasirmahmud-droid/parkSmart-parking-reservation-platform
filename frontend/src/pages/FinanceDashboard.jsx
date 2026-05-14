@@ -47,6 +47,9 @@ function FinanceDashboard({ openReport }) {
   const [financeMessage, setFinanceMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
+   // Stat Box states
+  const [convertedRevenue, setConvertedRevenue] = useState("Showing local currency");
+
   // Table states
   const [logs, setLogs] = useState([]);
   const [tableMessage, setTableMessage] = useState("");
@@ -266,6 +269,31 @@ function FinanceDashboard({ openReport }) {
 
     return sum;
   }, 0);
+  
+  async function updateRevenueCurrency(event) {
+    const selectedCurrency = event.target.value;
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/finance/revenue-report?target=${selectedCurrency}`
+      );
+
+      const data = await response.json();
+
+      if (!data.success) {
+        setConvertedRevenue(data.message || "Could not convert revenue.");
+        return;
+      }
+
+      if (selectedCurrency === "BDT") {
+        setConvertedRevenue("Showing local currency");
+      } else {
+        setConvertedRevenue(`≈ ${data.convertedTotal} ${data.currency}`);
+      }
+    } catch (error) {
+      setConvertedRevenue("Currency conversion failed.");
+    }
+  }
 
   const activeCars = logs.filter(
     (log) => log.status === "Active" || log.status === "Overstay"
@@ -802,14 +830,14 @@ function FinanceDashboard({ openReport }) {
             BDT <span id="total-revenue">{totalRevenue}</span>
           </span>
 
-          <select id="currency-selector" className="revenue-currency-selector">
+          <select id="currency-selector" className="revenue-currency-selector" onChange={updateRevenueCurrency}>
             <option value="BDT">BDT</option>
             <option value="USD">USD</option>
             <option value="EUR">EUR</option>
           </select>
 
           <p id="converted-revenue" className="converted-revenue-text">
-            Showing local currency
+            {convertedRevenue}
           </p>
 
           <button
